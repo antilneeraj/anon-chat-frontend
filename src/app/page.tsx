@@ -1,65 +1,110 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { useChat } from '~/hooks/useChat';
 
 export default function Home() {
+  const [step, setStep] = useState<'JOIN' | 'CHAT'>('JOIN');
+  const [roomId, setRoomId] = useState('');
+  const [username, setUsername] = useState('');
+  const [input, setInput] = useState('');
+
+  // Only initialize chat hook when we reach the CHAT step
+  const { messages, sendMessage, isConnected } = useChat(
+    step === 'CHAT' ? roomId : '', 
+    step === 'CHAT' ? username : ''
+  );
+
+  const handleJoin = () => {
+    if (roomId && username) setStep('CHAT');
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="flex min-h-screen flex-col items-center justify-center bg-[#0f1115] text-white">
+      
+      {/* STEP 1: LOGIN FORM */}
+      {step === 'JOIN' && (
+        <div className="p-8 bg-[#181b21] rounded-lg border border-gray-800 shadow-xl w-96">
+          <h1 className="text-2xl font-bold mb-6 text-[#f4d738]">ANON Chat_</h1>
+          <input
+            className="w-full p-3 mb-4 bg-black border border-gray-700 rounded text-white"
+            placeholder="Room ID"
+            value={roomId}
+            onChange={(e) => setRoomId(e.target.value)}
+          />
+          <input
+            className="w-full p-3 mb-6 bg-black border border-gray-700 rounded text-white"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <button
+            onClick={handleJoin}
+            className="w-full bg-[#f4d738] text-black font-bold p-3 rounded hover:opacity-90 transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            🚀 Enter Room
+          </button>
+        </div>
+      )}
+
+      {/* STEP 2: CHAT INTERFACE */}
+      {step === 'CHAT' && (
+        <div className="w-full max-w-4xl h-[90vh] flex flex-col bg-[#181b21] rounded-xl overflow-hidden border border-gray-800">
+          
+          {/* HEADER */}
+          <div className="p-4 border-b border-gray-700 flex justify-between items-center bg-black/40 backdrop-blur">
+            <h2 className="font-mono text-[#f4d738]">#{roomId}</h2>
+            <div className={`flex items-center gap-2 text-sm ${isConnected ? 'text-green-400' : 'text-red-500'}`}>
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-500'}`}></div>
+              {isConnected ? 'Connected' : 'Connecting...'}
+            </div>
+          </div>
+
+          {/* MESSAGES AREA */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`flex flex-col ${msg.sender === username ? 'items-end' : 'items-start'}`}
+              >
+                {/* System Messages */}
+                {msg.type === 'JOIN' || msg.type === 'LEAVE' ? (
+                   <span className="text-xs text-gray-500 italic py-2 mx-auto">
+                     {msg.sender} {msg.content}
+                   </span>
+                ) : (
+                  /* Chat Bubbles */
+                  <div className={`max-w-[70%] p-3 rounded-xl ${
+                    msg.sender === username 
+                      ? 'bg-[#f4d738] text-black rounded-tr-none' 
+                      : 'bg-[#2a2e35] text-white rounded-tl-none'
+                  }`}>
+                    <span className="text-xs opacity-50 block mb-1 font-bold">{msg.sender}</span>
+                    {msg.content}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* INPUT AREA */}
+          <div className="p-4 bg-black/40 border-t border-gray-700 flex gap-2">
+            <input
+              className="flex-1 bg-[#0f1115] border border-gray-600 rounded-full px-4 py-2 text-white focus:border-[#f4d738] outline-none"
+              placeholder="Type a message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && (sendMessage(input), setInput(''))}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <button 
+              onClick={() => { sendMessage(input); setInput(''); }}
+              className="bg-[#f4d738] text-black w-10 h-10 rounded-full font-bold flex items-center justify-center hover:scale-105 transition"
+            >
+              ➤
+            </button>
+          </div>
         </div>
-      </main>
-    </div>
+      )}
+    </main>
   );
 }
