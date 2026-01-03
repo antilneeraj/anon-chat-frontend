@@ -1,0 +1,20 @@
+# Branch name validation
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
+PROTECTED_BRANCHES="^(main|master)$"
+if [[ $BRANCH_NAME =~ $PROTECTED_BRANCHES ]]; then
+    echo "❌ Direct pushes to protected branches are not allowed"
+    exit 1
+fi
+
+# Feature branch naming convention
+VALID_BRANCHES="^(feature|bugfix|hotfix|deps|chore)/"
+if [[ ! $BRANCH_NAME =~ $VALID_BRANCHES ]]; then
+    echo "❌ Branch name must start with: feature/, bugfix/, hotfix/, deps/, or chore/"
+    exit 1
+fi
+
+# Run checks
+echo "🔍 Running pre-push checks..."
+# npm run check-types || exit 1
+npm run build || exit 1

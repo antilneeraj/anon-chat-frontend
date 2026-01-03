@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint . -c ./eslint.config.mjs --fix",
+    "prepare": "cross-env-shell \"if not defined CI if not defined VERCEL husky\"",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@heroui/react": "^2.8.7",
@@ -24,8 +26,10 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/sockjs-client": "^1",
-    "eslint": "^9",
+    "eslint": "^9.39.2",
     "eslint-config-next": "16.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "tailwindcss": "^4",
     "typescript": "^5"

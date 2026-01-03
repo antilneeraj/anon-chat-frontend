@@ -1,0 +1,5 @@
+# First verify the commit message
+.husky/commit-msg-draft .git/COMMIT_EDITMSG || exit 1
+
+# Then run other checks
+npx lint-staged
