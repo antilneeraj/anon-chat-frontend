@@ -9,8 +9,8 @@ export const useChat = (roomId: string, username: string) => {
 
     useEffect(() => {
         if (!roomId || !username) return;
-
-        // 1. Initialize Stomp Client
+        
+        // Establish WebSocket Connection
         const socket = new SockJS(process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8080/ws');
         const client = new Client({
             webSocketFactory: () => socket,
