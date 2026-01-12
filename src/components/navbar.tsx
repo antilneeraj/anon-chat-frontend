@@ -5,7 +5,7 @@ import {
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem,
+  NavbarMenuItem
 } from "@heroui/navbar";
 import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
@@ -16,11 +16,7 @@ import clsx from "clsx";
 
 import { siteConfig } from "~/config/site";
 import { ThemeSwitch } from "~/components/theme-switch";
-import {
-  GithubIcon,
-  SearchIcon,
-  Logo,
-} from "~/components/icons";
+import { Logo, GithubIcon, SearchIcon } from "./icons";
 
 export const Navbar = () => {
   const searchInput = (
@@ -28,7 +24,7 @@ export const Navbar = () => {
       aria-label="Search"
       classNames={{
         inputWrapper: "bg-default-100",
-        input: "text-sm",
+        input: "text-sm"
       }}
       endContent={
         <Kbd className="hidden lg:inline-block" keys={["command"]}>
@@ -59,7 +55,7 @@ export const Navbar = () => {
               <NextLink
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
+                  "data-[active=true]:text-primary data-[active=true]:font-medium"
                 )}
                 color="foreground"
                 href={item.href}
@@ -71,10 +67,7 @@ export const Navbar = () => {
         </ul>
       </NavbarContent>
 
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
+      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="end">
         <NavbarItem className="hidden sm:flex gap-2">
           <Link isExternal aria-label="Github" href={siteConfig.links.github}>
             <GithubIcon className="text-default-500" />
